@@ -1,6 +1,6 @@
 ﻿namespace Day1
 {
-    internal class Part1
+    static internal class Part1
     {
         public static void Execute()
         {

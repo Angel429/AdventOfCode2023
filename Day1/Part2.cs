@@ -1,10 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
+﻿using System.Collections.ObjectModel;
 
 namespace Day1
 {
-    internal class Part2
+    static internal class Part2
     {
         private static ReadOnlyDictionary<string, int> _numbers;
 
@@ -26,16 +24,59 @@ namespace Day1
 
         public static void Execute()
         {
-            var regex = new Regex("^.*(?<first>(one|two|three|four|five|six|seven|eight|nine)|\\d).*(?<last>(one|two|three|four|five|six|seven|eight|nine)|\\d).*$", RegexOptions.Compiled);
             var sum = 0;
             foreach (var line in File.ReadLines("input.txt"))
             {
-                var match = regex.Match(line);
-                sum += 10 * (char.IsNumber(match.Groups["first"].Value[0]) ? match.Groups["first"].Value[0] - '0' : _numbers[match.Groups["first"].Value]);
-                sum += char.IsNumber(match.Groups["last"].Value[0]) ? match.Groups["last"].Value[0] - '0' : _numbers[match.Groups["last"].Value];
+                sum += 10 * FindFirstStringOrNumber(line);
+                sum += FindLastStringOrNumber(line);
             }
 
             Console.WriteLine(sum);
+        }
+
+        private static int FindFirstStringOrNumber(string line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                if (char.IsDigit(line[i]))
+                {
+                    return line[i] - '0';
+                } else
+                {
+                    foreach (var number in _numbers)
+                    {
+                        if (i + number.Key.Length <= line.Length && line.AsSpan(i..(i + number.Key.Length)).Equals(number.Key, StringComparison.Ordinal))
+                        {
+                            return number.Value;
+                        }
+                    }
+                }
+            }
+
+            throw new Exception("This is finen't");
+        }
+
+        private static int FindLastStringOrNumber(string line)
+        {
+            for (int i = line.Length - 1; i >= 0; i--)
+            {
+                if (char.IsDigit(line[i]))
+                {
+                    return line[i] - '0';
+                }
+                else
+                {
+                    foreach (var number in _numbers)
+                    {
+                        if (i + number.Key.Length <= line.Length && line.AsSpan(i..(i + number.Key.Length)).Equals(number.Key, StringComparison.Ordinal))
+                        {
+                            return number.Value;
+                        }
+                    }
+                }
+            }
+
+            throw new Exception("This is finen't");
         }
     }
 }
