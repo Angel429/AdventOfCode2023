@@ -4,7 +4,7 @@ namespace Day1
 {
     static internal class Part2
     {
-        private static ReadOnlyDictionary<string, int> _numbers;
+        private readonly static ReadOnlyDictionary<string, int> _numbers;
 
         static Part2()
         {
