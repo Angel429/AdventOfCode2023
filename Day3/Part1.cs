@@ -9,49 +9,49 @@
 
             for (int lineIndex = 0; lineIndex < allLines.Length; lineIndex++)
             {
-                var currentState = State.NO_NUMBER_FOUND;
+                var currentState = NumberState.NO_NUMBER_FOUND;
                 var numberStartsIndex = -1;
 
                 for (int characterInLineIndex = 0; characterInLineIndex < allLines[lineIndex].Length; characterInLineIndex++)
                 {
                     switch (currentState)
                     {
-                        case State.NO_NUMBER_FOUND:
+                        case NumberState.NO_NUMBER_FOUND:
                             if (char.IsNumber(allLines[lineIndex][characterInLineIndex]))
                             {
                                 numberStartsIndex = characterInLineIndex;
                                 if (IsNumberAdjacentToSymbol(allLines, lineIndex, characterInLineIndex))
                                 {
-                                    currentState = State.FOUND_NUMBER_WITH_SYMBOL;
+                                    currentState = NumberState.FOUND_NUMBER_WITH_SYMBOL;
                                 } else
                                 {
-                                    currentState = State.FOUND_NUMBER_WITHOUT_SYMBOL;
+                                    currentState = NumberState.FOUND_NUMBER_WITHOUT_SYMBOL;
                                 }
                             }
                             break;
-                        case State.FOUND_NUMBER_WITHOUT_SYMBOL:
+                        case NumberState.FOUND_NUMBER_WITHOUT_SYMBOL:
                             if (char.IsNumber(allLines[lineIndex][characterInLineIndex]))
                             {
                                 if (IsNumberAdjacentToSymbol(allLines, lineIndex, characterInLineIndex))
                                 {
-                                    currentState = State.FOUND_NUMBER_WITH_SYMBOL;
+                                    currentState = NumberState.FOUND_NUMBER_WITH_SYMBOL;
                                 }
                             } else
                             {
-                                currentState = State.NO_NUMBER_FOUND;
+                                currentState = NumberState.NO_NUMBER_FOUND;
                             }
                             break;
-                        case State.FOUND_NUMBER_WITH_SYMBOL:
+                        case NumberState.FOUND_NUMBER_WITH_SYMBOL:
                             if (!char.IsNumber(allLines[lineIndex][characterInLineIndex]))
                             {
                                 sum += int.Parse(allLines[lineIndex].AsSpan(new Range(numberStartsIndex, characterInLineIndex)));
-                                currentState = State.NO_NUMBER_FOUND;
+                                currentState = NumberState.NO_NUMBER_FOUND;
                             }
                             break;
                     }
                 }
                 
-                if (currentState == State.FOUND_NUMBER_WITH_SYMBOL)
+                if (currentState == NumberState.FOUND_NUMBER_WITH_SYMBOL)
                 {
                     sum += int.Parse(allLines[lineIndex].AsSpan(new Range(numberStartsIndex, allLines[lineIndex].Length)));
                 }
