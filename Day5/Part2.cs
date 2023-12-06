@@ -14,15 +14,16 @@ namespace Day5
 
             var firstLine = linesEnumerable.First();
             var seedsMatch = seedsRegex.Match(firstLine);
-            var currentValues = new HashSet<RangeLong>(new RangeLongComparer());
+            var currentValues = new HashSet<(long Start, long Range)>();
+            var a = currentValues.FirstOrDefault();
             for (int seedIdIndex = 0; seedIdIndex < seedsMatch.Groups["seedId"].Captures.Count; seedIdIndex++)
             {
                 var seedId = long.Parse(seedsMatch.Groups["seedId"].Captures[seedIdIndex].ValueSpan);
                 var range = int.Parse(seedsMatch.Groups["range"].Captures[seedIdIndex].ValueSpan);
-                currentValues.Add(new RangeLong(seedId, seedId + range));
+                currentValues.Add((seedId, range));
             }
 
-            var nextValues = new HashSet<RangeLong>(new RangeLongComparer());
+            var nextValues = new HashSet<(long Start, long Range)>();
 
             foreach (var line in linesEnumerable.Skip(3))
             {
@@ -40,15 +41,15 @@ namespace Day5
                     var sourceId = long.Parse(match.Groups["sourceId"].ValueSpan);
                     var range = long.Parse(match.Groups["range"].ValueSpan);
 
-                    var currentValuesToAdd = new List<RangeLong>();
-                    var currentValuesToRemove = new List<RangeLong>();
+                    var currentValuesToAdd = new List<(long Start, long Range)>();
+                    var currentValuesToRemove = new List<(long Start, long Range)>();
                     foreach (var currentValue in currentValues)
                     {
-                        (var rangeInside, var rangesOutside) = SplitRange(new RangeLong(sourceId, sourceId + range), currentValue);
+                        (var rangeInside, var rangesOutside) = SplitRange((sourceId, range), currentValue);
                         
                         if (rangeInside != null)
                         {
-                            nextValues.Add(new RangeLong(destinationId + rangeInside.Start - sourceId, destinationId + rangeInside.End - sourceId));
+                            nextValues.Add((destinationId + rangeInside.Value.Start - sourceId, rangeInside.Value.Range));
                             if (rangesOutside != null)
                             {
                                 currentValuesToAdd.AddRange(rangesOutside);
@@ -73,35 +74,34 @@ namespace Day5
             currentValues.UnionWith(nextValues);
             nextValues.Clear();
 
-            var a = currentValues.Where(x => x.Start <= 0).ToList();
             Console.WriteLine(currentValues.Min(x => x.Start));
         }
 
-        private static (RangeLong? rangeInside, RangeLong[]? rangesOutside) SplitRange(RangeLong rangeOfReference, RangeLong rangeToSplit)
+        private static ((long Start, long Range)? rangeInside, (long Start, long Range)[]? rangesOutside) SplitRange((long Start, long Range) rangeOfReference, (long Start, long Range) rangeToSplit)
         {
             if (rangeToSplit.Start < rangeOfReference.Start)
             {
-                if (rangeToSplit.End < rangeOfReference.Start)
+                if (rangeToSplit.Start + rangeToSplit.Range < rangeOfReference.Start)
                 {
                     return (null, [rangeToSplit]);
-                } else if (rangeToSplit.End <= rangeOfReference.End)
+                } else if (rangeToSplit.Start + rangeToSplit.Range <= rangeOfReference.Start + rangeOfReference.Range)
                 {
-                    return (new(rangeOfReference.Start, rangeToSplit.End), [new(rangeToSplit.Start, rangeOfReference.Start)]);
+                    return (new(rangeOfReference.Start, rangeToSplit.Start + rangeToSplit.Range - rangeOfReference.Start), [new(rangeToSplit.Start, rangeOfReference.Start - rangeToSplit.Start)]);
                 } else
                 {
-                    return (new(rangeOfReference.Start, rangeOfReference.End), [new(rangeToSplit.Start, rangeOfReference.Start), new(rangeOfReference.End, rangeToSplit.End)]);
+                    return (rangeOfReference, [new(rangeToSplit.Start, rangeOfReference.Start - rangeToSplit.Start), new(rangeOfReference.Start + rangeOfReference.Range, rangeToSplit.Start + rangeToSplit.Range - rangeOfReference.Start - rangeOfReference.Range)]);
                 }
             } else
             {
-                if (rangeToSplit.Start > rangeOfReference.End)
+                if (rangeToSplit.Start > rangeOfReference.Start + rangeOfReference.Range)
                 {
                     return (null, [rangeToSplit]);
-                } else if (rangeToSplit.End <= rangeOfReference.End)
+                } else if (rangeToSplit.Start + rangeToSplit.Range <= rangeOfReference.Start + rangeOfReference.Range)
                 {
-                    return (new(rangeToSplit.Start, rangeToSplit.End), null);
+                    return (rangeToSplit, null);
                 } else
                 {
-                    return (new(rangeToSplit.Start, rangeOfReference.End), [new(rangeOfReference.End, rangeToSplit.End)]);
+                    return (new(rangeToSplit.Start, rangeOfReference.Start + rangeOfReference.Range - rangeToSplit.Start), [new(rangeOfReference.Start + rangeOfReference.Range, rangeToSplit.Start + rangeToSplit.Range - rangeOfReference.Start - rangeOfReference.Range)]);
                 }
             }
         }
