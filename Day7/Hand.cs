@@ -4,35 +4,32 @@ namespace Day7
 {
     internal class Hand : IComparable<Hand>
     {
-        private static readonly ReadOnlyDictionary<char, int> _cardsValues;
-
-        static Hand()
-        {
-            _cardsValues = new ReadOnlyDictionary<char, int>(new Dictionary<char, int>
-            {
-                { '2', 0 },
-                { '3', 1 },
-                { '4', 2 },
-                { '5', 3 },
-                { '6', 4 },
-                { '7', 5 },
-                { '8', 6 },
-                { '9', 7 },
-                { 'T', 8 },
-                { 'J', 9 },
-                { 'Q', 10 },
-                { 'K', 11 },
-                { 'A', 12 }
-            });
-        }
-
         public readonly string Cards;
         public readonly int Bid;
+        private readonly bool JacksAreJokers;
+        private readonly ReadOnlyDictionary<char, int> CardsValues;
 
-        public Hand(string cards, int bid)
+        public Hand(string cards, int bid, bool jacksAreJokers)
         {
             Cards = cards;
             Bid = bid;
+            JacksAreJokers = jacksAreJokers;
+            CardsValues = new ReadOnlyDictionary<char, int>(new Dictionary<char, int>
+            {
+                { '2', 2 },
+                { '3', 3 },
+                { '4', 4 },
+                { '5', 5 },
+                { '6', 6 },
+                { '7', 7 },
+                { '8', 8 },
+                { '9', 9 },
+                { 'T', 10 },
+                { 'J', jacksAreJokers ? 1 : 11 },
+                { 'Q', 12 },
+                { 'K', 13 },
+                { 'A', 14 }
+            });
         }
 
         public int CompareTo(Hand other)
@@ -46,10 +43,43 @@ namespace Day7
                 xValues[card] = currentCount + 1;
             }
 
+            if (JacksAreJokers && xValues.ContainsKey('J'))
+            {
+                var cardsWithoutJack = xValues.Where(x => x.Key != 'J');
+                
+                if (cardsWithoutJack.Any())
+                {
+                    var maxCard = cardsWithoutJack.MaxBy(x => x.Value).Key;
+                    xValues[maxCard] += xValues['J'];
+                    xValues.Remove('J');
+                } else
+                {
+                    xValues['A'] = xValues['J'];
+                    xValues.Remove('J');
+                }
+            }
+
             foreach (var card in other.Cards)
             {
                 var currentCount = yValues.GetValueOrDefault(card);
                 yValues[card] = currentCount + 1;
+            }
+
+            if (JacksAreJokers && yValues.ContainsKey('J'))
+            {
+                var cardsWithoutJack = yValues.Where(x => x.Key != 'J');
+
+                if (cardsWithoutJack.Any())
+                {
+                    var maxCard = cardsWithoutJack.MaxBy(x => x.Value).Key;
+                    yValues[maxCard] += yValues['J'];
+                    yValues.Remove('J');
+                }
+                else
+                {
+                    yValues['A'] = yValues['J'];
+                    yValues.Remove('J');
+                }
             }
 
             var orderedCountOfXCards = xValues.Values.OrderDescending().ToList();
@@ -70,8 +100,8 @@ namespace Day7
 
             for (int i = 0; i < Cards.Length; i++)
             {
-                var xCardValue = _cardsValues[Cards[i]];
-                var yCardValue = _cardsValues[other.Cards[i]];
+                var xCardValue = CardsValues[Cards[i]];
+                var yCardValue = CardsValues[other.Cards[i]];
 
                 if (xCardValue > yCardValue)
                 {

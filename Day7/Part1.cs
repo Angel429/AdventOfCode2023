@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Day7
+﻿namespace Day7
 {
     static internal class Part1
     {
@@ -8,7 +6,7 @@ namespace Day7
         {
             var hands = File.ReadAllLines("input.txt")
                 .Select(x => x.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-                .Select(x => new Hand(x[0], int.Parse(x[1])))
+                .Select(x => new Hand(x[0], int.Parse(x[1]), false))
                 .ToList();
 
             hands.Sort();
