@@ -28,35 +28,34 @@
 
             foreach (var loopLength in loopLengths.Skip(1).Select(x => (long)x))
             {
-                var gcd = findGCD([currentLCM, loopLength], 2);
-                currentLCM = currentLCM / gcd * loopLength;
+                currentLCM = FindLCM(currentLCM, loopLength);
             }
 
             Console.WriteLine(currentLCM);
         }
 
-        // Functions to find the Greatest Common Divisor, tweaked to support long integers
-        // From: https://www.geeksforgeeks.org/gcd-two-array-numbers/
-        private static long findGCD(long[] arr, int n)
+        // Least Common Multiple calculation
+        // Formula from Wikipedia
+        // https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
+        private static long FindLCM(long a, long b)
         {
-            long result = arr[0];
-            for (int i = 1; i < n; i++)
-            {
-                result = gcd(arr[i], result);
+            return a / FindGCD(a, b) * b;
+        }
 
-                if (result == 1)
-                {
-                    return 1;
-                }
+        // Greatest Common Divisor calculation using Euclid's algorithm
+        // Formula from Wikipedia
+        // https://en.wikipedia.org/wiki/Greatest_common_divisor#Euclid's_algorithm
+        // https://en.wikipedia.org/wiki/Euclidean_algorithm
+        private static long FindGCD(long a, long b)
+        {
+            if (b < a) return FindGCD(b, a);
+
+            while (a > 0 && b > 0)
+            {
+                (a, b) = (b, a % b);
             }
 
-            return result;
-        }
-        private static long gcd(long a, long b)
-        {
-            if (a == 0)
-                return b;
-            return gcd(b % a, a);
+            return a;
         }
     }
 }
