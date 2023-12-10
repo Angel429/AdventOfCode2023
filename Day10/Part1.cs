@@ -21,15 +21,15 @@
             var currentPoint = (-1, -1);
             var totalLoopSize = 0;
 
-            if (new[] { '7', '|', 'F' }.Contains(map[startingPoint.Item1 - 1][startingPoint.Item2])) {
+            if (startingPoint.Item1 > 0 && new[] { '7', '|', 'F' }.Contains(map[startingPoint.Item1 - 1][startingPoint.Item2])) {
                 currentPoint = (startingPoint.Item1 - 1, startingPoint.Item2);
-            } else if (new[] { 'J', '-', '7' }.Contains(map[startingPoint.Item1][startingPoint.Item2 + 1]))
+            } else if (startingPoint.Item2 < map[startingPoint.Item1].Length - 1 && new[] { 'J', '-', '7' }.Contains(map[startingPoint.Item1][startingPoint.Item2 + 1]))
             {
                 currentPoint = (startingPoint.Item1, startingPoint.Item2 + 1);
-            } else if (new[] { 'J', '|', 'L' }.Contains(map[startingPoint.Item1 + 1][startingPoint.Item2]))
+            } else if (startingPoint.Item1 < map.Length - 1 && new[] { 'J', '|', 'L' }.Contains(map[startingPoint.Item1 + 1][startingPoint.Item2]))
             {
                 currentPoint = (startingPoint.Item1 + 1, startingPoint.Item2);
-            } else
+            } else if (startingPoint.Item2 > 0)
             {
                 currentPoint = (startingPoint.Item1, startingPoint.Item2 - 1);
             }
