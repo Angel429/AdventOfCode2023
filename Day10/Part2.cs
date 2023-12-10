@@ -106,98 +106,15 @@
                 {
                     if (!visitedPoints.Contains((row, column)))
                     {
-                        var oddParts = 0;
                         var lastEdge = '\0';
-
-                        var loopPartsUp = 0;
-                        for (int newRow = row - 1; newRow >= 0; newRow--)
-                        {
-                            if (visitedPoints.Contains((newRow, column)))
-                            {
-                                if (map[newRow][column] == '-')
-                                {
-                                    loopPartsUp++;
-                                    lastEdge = '\0';
-                                } else if (new[] {'J', 'L' }.Contains(map[newRow][column]))
-                                {
-                                    lastEdge = map[newRow][column];
-                                } else if ((lastEdge == 'J' && map[newRow][column] == 'F') || (lastEdge == 'L' && map[newRow][column] == '7'))
-                                {
-                                    loopPartsUp++;
-                                    lastEdge = '\0';
-                                } else if (map[newRow][column] != '|')
-                                {
-                                    lastEdge = '\0';
-                                }
-                            }
-                        }
-                        if (loopPartsUp % 2 != 0) oddParts++;
-
-                        lastEdge = '\0';
-                        var loopPartsRight = 0;
-                        for (int newColumn = column + 1; newColumn < map[row].Length; newColumn++)
-                        {
-                            if (visitedPoints.Contains((row, newColumn)))
-                            {
-                                if (map[row][newColumn] == '|')
-                                {
-                                    loopPartsRight++;
-                                    lastEdge = '\0';
-                                }
-                                else if (new[] { 'L', 'F' }.Contains(map[row][newColumn]))
-                                {
-                                    lastEdge = map[row][newColumn];
-                                }
-                                else if ((lastEdge == 'L' && map[row][newColumn] == '7') || (lastEdge == 'F' && map[row][newColumn] == 'J'))
-                                {
-                                    loopPartsRight++;
-                                    lastEdge = '\0';
-                                }
-                                else if (map[row][newColumn] != '-')
-                                {
-                                    lastEdge = '\0';
-                                }
-                            }
-                        }
-                        if (loopPartsRight % 2 != 0) oddParts++;
-
-                        lastEdge = '\0';
-                        var loopPartsDown = 0;
-                        for (int newRow = row + 1; newRow < map.Length; newRow++)
-                        {
-                            if (visitedPoints.Contains((newRow, column)))
-                            {
-                                if (map[newRow][column] == '-')
-                                {
-                                    loopPartsDown++;
-                                    lastEdge = '\0';
-                                }
-                                else if (new[] { '7', 'F' }.Contains(map[newRow][column]))
-                                {
-                                    lastEdge = map[newRow][column];
-                                }
-                                else if ((lastEdge == '7' && map[newRow][column] == 'L') || (lastEdge == 'F' && map[newRow][column] == 'J'))
-                                {
-                                    loopPartsDown++;
-                                    lastEdge = '\0';
-                                }
-                                else if (map[newRow][column] != '|')
-                                {
-                                    lastEdge = '\0';
-                                }
-                            }
-                        }
-                        if (loopPartsDown % 2 != 0) oddParts++;
-
-                        lastEdge = '\0';
-                        var loopPartsLeft = 0;
+                        var oddIntersections = 0;
                         for (int newColumn = column - 1; newColumn >= 0; newColumn--)
                         {
                             if (visitedPoints.Contains((row, newColumn)))
                             {
                                 if (map[row][newColumn] == '|')
                                 {
-                                    loopPartsLeft++;
+                                    oddIntersections++;
                                     lastEdge = '\0';
                                 }
                                 else if (new[] { 'J', '7' }.Contains(map[row][newColumn]))
@@ -206,7 +123,7 @@
                                 }
                                 else if ((lastEdge == 'J' && map[row][newColumn] == 'F') || (lastEdge == '7' && map[row][newColumn] == 'L'))
                                 {
-                                    loopPartsLeft++;
+                                    oddIntersections++;
                                     lastEdge = '\0';
                                 }
                                 else if (map[row][newColumn] != '-')
@@ -215,9 +132,8 @@
                                 }
                             }
                         }
-                        if (loopPartsLeft % 2 != 0) oddParts++;
 
-                        if (oddParts == 4)
+                        if (oddIntersections % 2 != 0)
                         {
                             tilesEnclosed++;
                         }
