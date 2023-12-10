@@ -102,41 +102,33 @@
             var tilesEnclosed = 0;
             for (int row = 0; row < map.Length; row++)
             {
+                var lastEdge = '\0';
+                var intersections = 0;
                 for (int column = 0; column < map[row].Length; column++)
                 {
-                    if (!visitedPoints.Contains((row, column)))
+                    if (visitedPoints.Contains((row, column)))
                     {
-                        var lastEdge = '\0';
-                        var oddIntersections = 0;
-                        for (int newColumn = column - 1; newColumn >= 0; newColumn--)
+                        if (map[row][column] == '|')
                         {
-                            if (visitedPoints.Contains((row, newColumn)))
-                            {
-                                if (map[row][newColumn] == '|')
-                                {
-                                    oddIntersections++;
-                                    lastEdge = '\0';
-                                }
-                                else if (new[] { 'J', '7' }.Contains(map[row][newColumn]))
-                                {
-                                    lastEdge = map[row][newColumn];
-                                }
-                                else if ((lastEdge == 'J' && map[row][newColumn] == 'F') || (lastEdge == '7' && map[row][newColumn] == 'L'))
-                                {
-                                    oddIntersections++;
-                                    lastEdge = '\0';
-                                }
-                                else if (map[row][newColumn] != '-')
-                                {
-                                    lastEdge = '\0';
-                                }
-                            }
+                            intersections++;
+                            lastEdge = '\0';
                         }
-
-                        if (oddIntersections % 2 != 0)
+                        else if (new[] { 'L', 'F' }.Contains(map[row][column]))
                         {
-                            tilesEnclosed++;
+                            lastEdge = map[row][column];
                         }
+                        else if ((lastEdge == 'L' && map[row][column] == '7') || (lastEdge == 'F' && map[row][column] == 'J'))
+                        {
+                            intersections++;
+                            lastEdge = '\0';
+                        }
+                        else if (map[row][column] != '-')
+                        {
+                            lastEdge = '\0';
+                        }
+                    } else if (intersections % 2 != 0)
+                    {
+                        tilesEnclosed++;
                     }
                 }
             }
