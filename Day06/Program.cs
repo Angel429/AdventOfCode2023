@@ -1,4 +1,4 @@
-﻿using Day11;
+﻿using Day06;
 
 Part1.Execute();
 Part2.Execute();

@@ -1,4 +1,4 @@
-﻿namespace Day10
+﻿namespace Day11
 {
     static internal class Part2
     {
