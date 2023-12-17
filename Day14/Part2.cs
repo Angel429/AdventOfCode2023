@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Day14
+﻿namespace Day14
 {
     static internal class Part2
     {
