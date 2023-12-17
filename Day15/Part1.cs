@@ -12,7 +12,7 @@
                 var hash = 0;
                 foreach (var character in step)
                 {
-                    hash = ((hash + character) * 17) % 256;
+                    hash = (hash + character) * 17 % 256;
                 }
                 sum += hash;
             }
